@@ -1,7 +1,7 @@
 class Game {
-  constructor(rows, cols) {
-    this.rows = rows;
+  constructor(cols, rows) {
     this.cols = cols;
+    this.rows = rows;
     this.field = [];
     this.selectedElement = [];
     this.initializeField();
@@ -44,13 +44,31 @@ class Game {
   handleClick(row, col) {
     if (this.selectedElement.length === 0) {
       this.selectElements(row, col);
-    } else {
+    } else if (this.isSelectedElement(row, col)) {
       this.removeSelectedElements();
+    } else {
+      this.resetSelection();
     }
+  }
+
+  isSelectedElement(row, col) {
+    return this.selectedElement.some(
+      (element) => element.row === row && element.col === col
+    );
+  }
+
+  resetSelection() {
+    this.selectedElement = [];
+    this.updateField();
   }
 
   selectElements(row, col) {
     let group = this.getElementGroup(row, col);
+    if (group.length === 1 || group.length === 0) {
+      window.alert("Please select a group");
+      return;
+    }
+
     this.selectedElement = group;
     this.highlightSelectedElements();
   }
@@ -89,14 +107,6 @@ class Game {
         return "";
     }
   }
-
-  // removeElement(row, col) {
-  //   let group = this.getElementGroup(row, col);
-  //   for (let i = 0; i < group.length; i++) {
-  //     this.field[group[i].row][group[i].col] = -1;
-  //   }
-  //   this.updateField();
-  // }
 
   getElementGroup(row, col) {
     let group = [];
@@ -140,6 +150,11 @@ class Game {
         table.rows[i].cells[j].textContent = this.getFigure(this.field[i][j]);
       }
     }
+  }
+
+  restart() {
+    this.initializeField();
+    this.renderField();
   }
 }
 
